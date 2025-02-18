@@ -1,0 +1,11 @@
+{
+    "name": "sam/mapper",
+    "description": "Map of Chicago protected bicycle infrastructure",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Sam Kovnar"
+        }
+    ],
+    "require": {}
+}
