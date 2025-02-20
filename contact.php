@@ -59,7 +59,6 @@
     <section id="contact">
       <div class="container-xl mt-3 mb-5">
         <h1 class="display-5 text-center py-3">Contact Us</h1>
-        <!-- <form action="/formsubmit.php" method="POST"> -->
         <form action="/emailsubmit.php" method="POST">
           <div class="form-group row justify-content-center py-2">
             <div class="col-sm-6 col-md-4"> <!-- Take up whole row up to "small" threshold -->
@@ -80,10 +79,8 @@
               <div class="form-group py-2">
                 <label for="reason">Reason for reaching out (choose one)*</label>
                 <select class="form-control" name="reason" id="reason">
-                  <option>Request a bench</option>
-                  <option>Report a broken bench</option>
-                  <option>Get involved</option>
-                  <option>Contribute materials</option>
+                  <option>Report a problem</option>
+                  <option>Contribute</option>
                   <option>Other</option>
                 </select>
               </div>

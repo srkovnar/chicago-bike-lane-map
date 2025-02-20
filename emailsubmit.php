@@ -62,9 +62,10 @@
   // Send email 
   if(!$mail->send()) {
       echo 'Message could not be sent. Mailer Error: '.$mail->ErrorInfo; 
-  } else {
-      echo 'Message has been sent.'; 
   }
+  // else {
+  //     echo 'Message has been sent.'; 
+  // }
 
   //header("Location: index.php");
 ?>
