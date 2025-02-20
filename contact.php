@@ -56,18 +56,51 @@
       </div>
     </nav>
 
-    <section id="about">
-    <div class="container-lg pt-3">
-      <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8"> <!--text-center text-md-start-->
-          <div class="display-5 text-center py-3">Contact Me</div>
-          <p>
-            (At some point in the future, this page will have a contact form if you want to tell me that I made a mistake. Give me some time to set that up.)
-          </p>
-        </div>  
+    <section id="contact">
+      <div class="container-xl mt-3 mb-5">
+        <h1 class="display-5 text-center py-3">Contact Us</h1>
+        <!-- <form action="/formsubmit.php" method="POST"> -->
+        <form action="/emailsubmit.php" method="POST">
+          <div class="form-group row justify-content-center py-2">
+            <div class="col-sm-6 col-md-4"> <!-- Take up whole row up to "small" threshold -->
+              <label for="firstname">First Name*:</label>
+              <input class="form-control" name="firstname" id="firstname" required>
+            </div>
+            <div class="col-sm-6 col-md-4"> <!-- At "small" threshold, group with firstname -->
+              <label for="lastname">Last Name:</label>
+              <input class="form-control" name="lastname" id="lastname">
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="form-group py-2">
+                <label for="email">Email address*:</label>
+                <input class="form-control" name="email" type="email" id="email" required>
+              </div>
+              <div class="form-group py-2">
+                <label for="reason">Reason for reaching out (choose one)*</label>
+                <select class="form-control" name="reason" id="reason">
+                  <option>Request a bench</option>
+                  <option>Report a broken bench</option>
+                  <option>Get involved</option>
+                  <option>Contribute materials</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group py-2">
+                <label for="message">Message*</label>
+                <textarea class="form-control" name="message" id="message" rows="3" required></textarea>
+              </div>
+            </div> 
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-8 justify-content-center text-center py-2">
+              <button type="submit" class="btn btn-primary rounded-pill">Submit</button>
+            </div>
+          </div>
+        </form> 
       </div>
-    </div>
-  </section>
+    </section>
 
   </body>
 </html>

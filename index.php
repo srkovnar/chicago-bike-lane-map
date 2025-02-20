@@ -1,9 +1,12 @@
 <?php
   require("vendor/autoload.php");
 
-  // Pack JSON into PHP variable
+  // Pack bike path data into PHP variable
   $paths = json_decode(file_get_contents("../paths.json"), true);
   // ^ Can't remember what the "true" does but I know it's important for something...
+
+  // Pack config data into PHP variable (WARNING: DO NOT INSERT INTO JAVASCRIPT, there is sensitive information in here that must not appear on client's device)
+  $config = json_decode(file_get_contents("../config.json"), true);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,9 +72,15 @@
     </nav>
 
     <!-- Pack data structure back into JSON for map script -->
-    <?php
-      echo "<script> const bicycle_paths = " . json_encode($paths) . ";</script>";
-    ?>
+    <script>
+      const bicycle_paths = <?php echo json_encode($paths); ?>;
+    </script>
+
+    <!-- Insert map parameters from config into JSON constants -->
+    <script>
+      const in_progress = <?php echo $config["in_progress"]; ?>;
+      const show_location = <?php echo $config["show_location"]; ?>;
+    </script>
 
     <div id="map" style="width: 100vw; height: 91vh; padding-top: 55px;"> <!-- CHange to 600px/400px if desired -->
       <script type="text/javascript" src="map.js"></script>

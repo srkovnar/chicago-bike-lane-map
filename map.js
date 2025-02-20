@@ -1,3 +1,8 @@
+/*
+ * This script requires the following javascript objects to be already defined:
+ * - in_progress: if true, a popup will appear in the center of the map indicating that the map is unfinished.
+ */
+
 // You don't have to do tileLayers this way; I'm doing it this way to make it easier to switch between layers and groups of pins.
 let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
@@ -105,9 +110,6 @@ for (let key in bicycle_paths) {
   if (path.description) {
     popup_text += `${path.description}`;
   }
-  if (path.website) {
-    popup_text += `<br><br><b>Website:</b> <a href="${path.website}" target="_blank">${path.website}</a>`;
-  }
   if (path.completion) { // For displaying an estimated completion date
     if (path.completed) {
       popup_text += `<br><br><b>Completed:</b> ${path.completion}`;
@@ -115,6 +117,14 @@ for (let key in bicycle_paths) {
     else {
       popup_text += `<br><br><b>Estimated completion date:</b> ${path.completion}`;
     }
+  }
+  if (path.links && (path.links.length > 0)) {
+    for (let i = 0; i < path.links.length; i++) {
+      // popup_text += `<tr><td>${path.links[i]["name"]}</td><td>${path.links[i]["address"]}</td></tr></table>`;
+      // Never mind. The table looks stupid. Try again later with better bootstrap.
+      popup_text += `<br><br><b>${path.links[i]["name"]}</b>:<br><a href="${path.links[i]["address"]}" target="_blank">${path.links[i]["address"]}</a>`
+    }
+    // popup_text += "</table>"
   }
 
   popup_text += '</span>';
@@ -179,22 +189,31 @@ layer_bike_boulevard_incomplete.addTo(map);
 
 layer_control.addTo(map);
 
-map.locate({setView: true, maxZoom: 13});
-
-// ADD A POPUP TO INDICATE THAT THE MAP IS NOT DONE
-var in_progress_popup = L.popup().setLatLng(
-    [41.88008353464845, -87.63587439931757]
-  ).setContent(
-    "Hello! This map is <b>still under construction</b>. Not all protected bicycle paths and trails have been added. Thank you for your patience."
-  ).addTo(map);
-
+/* Function to add a marker at your location */
 function onLocationFound(e) {
-    var radius = e.accuracy;
+  var radius = e.accuracy;
 
-    L.marker(e.latlng).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point")/*.openPopup()*/;
+  L.marker(e.latlng).addTo(map)
+      .bindPopup("You are within " + radius + " meters from this point")/*.openPopup()*/;
 
-    L.circle(e.latlng, radius).addTo(map);
+  L.circle(e.latlng, Math.min(radius, 1000)).addTo(map);
 }
 
-map.on('locationfound', onLocationFound);
+/* Only add the marker if constant `show_location` is set to "true" by upper-level PHP */
+if (show_location) {
+  map.locate({setView: true, maxZoom: 14});
+
+  map.on('locationfound', onLocationFound);
+}
+
+/* Listen for constant in_progress to be set by upper-level PHP. 
+ * If constant is set, display a warning popup
+ */
+if (in_progress) {
+  var in_progress_popup = L.popup().setLatLng(
+    [41.88008353464845, -87.63587439931757]
+  ).setContent(
+    "Hello! This map is <b>still under construction</b>. Not all components have been added to the map yet. Thank you for your patience!"
+  ).addTo(map);
+}
+// Note: consider moving both this and show-location into PHP as scripts. Might make more sense.

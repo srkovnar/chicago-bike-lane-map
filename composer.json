@@ -7,5 +7,7 @@
             "name": "Sam Kovnar"
         }
     ],
-    "require": {}
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    }
 }
