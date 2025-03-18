@@ -118,9 +118,9 @@ for (let key in bicycle_paths) {
         popup_text += `<b>(${segment.name})</b><br>`;
       }
       if (segment.description) {
-        popup_text += `${path.description}<br>`;
+        popup_text += `${segment.description}<br>`;
       }
-      if (segment.completion) { // For displaying an estimated completion date
+      if (segment["completion"]) { // For displaying an estimated completion date
         if (segment.completed) {
           popup_text += `<br><b>Completed:</b> ${segment.completion}<br>`;
         }
@@ -137,7 +137,6 @@ for (let key in bicycle_paths) {
         // popup_text += "</table>"
       }
       
-
       popup_text += '</span>';
 
       target_layer = layer_map[segment.type][segment.completed];
@@ -148,7 +147,7 @@ for (let key in bicycle_paths) {
       }).bindPopup(popup_text).addTo(target_layer.layer);
     }
   }
-  // Otherwise, assume this entry is just a single line.
+  // Otherwise, assume this entry is just a single line. TODO: Remove this chunk, use segments.
   else if (path.coordinates) {
     let popup_text = '<span class="popup">';
 
