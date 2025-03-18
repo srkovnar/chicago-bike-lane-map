@@ -78,8 +78,9 @@
 
     <!-- Insert map parameters from config into JSON constants -->
     <script>
-      const in_progress = <?php echo $config["in_progress"]; ?>;
-      const show_location = <?php echo $config["show_location"]; ?>;
+      const in_progress   = <?php if($config["in_progress"]) {echo "true";} else {echo "false";} ?>;
+      const show_location = <?php if($config["show_location"]) {echo "true";} else {echo "false";} ?>;
+      const zoom_location = <?php if($config["zoom_location"]) {echo "true";} else {echo "false";} ?>;
     </script>
 
     <div id="map" style="width: 100vw; height: 91vh; padding-top: 55px;"> <!-- CHange to 600px/400px if desired -->

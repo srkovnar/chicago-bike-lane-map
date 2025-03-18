@@ -62,36 +62,38 @@ let layer_map = {
     true: {
       "layer": layer_pbl,
       "dash": "0",
-      "color": "green"
+      "color": "purple"
     },
     false: {
       "layer": layer_pbl_incomplete,
       "dash": "7",
-      "color": "green"
+      "color": "purple"
     }
   },
   "RIPBL": {
     true: {
       "layer": layer_ripbl,
       "dash": "0",
-      "color": "#29F"
+      // "color": "#29F"
+      "color": "#24E"
     },
     false: {
       "layer": layer_ripbl_incomplete,
       "dash": "7",
-      "color": "#29F"
+      // "color": "#29F"
+      "color": "#24E"
     }
   },
   "Neighborhood Bikeway": {
     true: {
       "layer": layer_bike_boulevard,
       "dash": "0",
-      "color": "purple"
+      "color": "green"
     },
     false: {
       "layer": layer_bike_boulevard_incomplete,
       "dash": "7",
-      "color": "purple"
+      "color": "green"
     }
   },
 };
@@ -102,39 +104,86 @@ for (let key in bicycle_paths) {
 
   let path = bicycle_paths[key];
 
-  let popup_text = '<span class="popup">';
+  // If divided into segments, create one line for each segment
+  if (path.segments) {
+    for (let n in path.segments){
+      let segment = path.segments[n];
 
-  if (path.name) {
-    popup_text += `<b>${path.name}</b><br>`;
-  }
-  if (path.description) {
-    popup_text += `${path.description}`;
-  }
-  if (path.completion) { // For displaying an estimated completion date
-    if (path.completed) {
-      popup_text += `<br><br><b>Completed:</b> ${path.completion}`;
+      let popup_text = '<span class="popup">';
+
+      if (path.name) {
+        popup_text += `<b>${path.name}</b><br>`;
+      }
+      if (segment.name) {
+        popup_text += `<b>(${segment.name})</b><br>`;
+      }
+      if (segment.description) {
+        popup_text += `${path.description}<br>`;
+      }
+      if (segment.completion) { // For displaying an estimated completion date
+        if (segment.completed) {
+          popup_text += `<br><b>Completed:</b> ${segment.completion}<br>`;
+        }
+        else {
+          popup_text += `<br><b>Estimated completion date:</b> ${segment.completion}<br>`;
+        }
+      }
+      if (segment.links && (segment.links.length > 0)) {
+        for (let i = 0; i < segment.links.length; i++) {
+          // popup_text += `<tr><td>${path.links[i]["name"]}</td><td>${path.links[i]["address"]}</td></tr></table>`;
+          // Never mind. The table looks stupid. Try again later with better bootstrap.
+          popup_text += `<br><b>${segment.links[i]["name"]}</b>:<br><a href="${segment.links[i]["address"]}" target="_blank">${segment.links[i]["address"]}</a>`
+        }
+        // popup_text += "</table>"
+      }
+      
+
+      popup_text += '</span>';
+
+      target_layer = layer_map[segment.type][segment.completed];
+
+      L.polyline(segment.coordinates, {
+        dashArray: target_layer.dash,
+        color: target_layer.color
+      }).bindPopup(popup_text).addTo(target_layer.layer);
     }
-    else {
-      popup_text += `<br><br><b>Estimated completion date:</b> ${path.completion}`;
-    }
   }
-  if (path.links && (path.links.length > 0)) {
-    for (let i = 0; i < path.links.length; i++) {
-      // popup_text += `<tr><td>${path.links[i]["name"]}</td><td>${path.links[i]["address"]}</td></tr></table>`;
-      // Never mind. The table looks stupid. Try again later with better bootstrap.
-      popup_text += `<br><br><b>${path.links[i]["name"]}</b>:<br><a href="${path.links[i]["address"]}" target="_blank">${path.links[i]["address"]}</a>`
+  // Otherwise, assume this entry is just a single line.
+  else if (path.coordinates) {
+    let popup_text = '<span class="popup">';
+
+    if (path.name) {
+      popup_text += `<b>${path.name}</b><br>`;
     }
-    // popup_text += "</table>"
+    if (path.description) {
+      popup_text += `${path.description}`;
+    }
+    if (path.completion) { // For displaying an estimated completion date
+      if (path.completed) {
+        popup_text += `<br><br><b>Completed:</b> ${path.completion}`;
+      }
+      else {
+        popup_text += `<br><br><b>Estimated completion date:</b> ${path.completion}`;
+      }
+    }
+    if (path.links && (path.links.length > 0)) {
+      for (let i = 0; i < path.links.length; i++) {
+        // popup_text += `<tr><td>${path.links[i]["name"]}</td><td>${path.links[i]["address"]}</td></tr></table>`;
+        // Never mind. The table looks stupid. Try again later with better bootstrap.
+        popup_text += `<br><br><b>${path.links[i]["name"]}</b>:<br><a href="${path.links[i]["address"]}" target="_blank">${path.links[i]["address"]}</a>`
+      }
+      // popup_text += "</table>"
+    }
+
+    popup_text += '</span>';
+
+    target_layer = layer_map[path.type][path.completed];
+
+    L.polyline(path.coordinates, {
+      dashArray: target_layer.dash,
+      color: target_layer.color
+    }).bindPopup(popup_text).addTo(target_layer.layer);
   }
-
-  popup_text += '</span>';
-
-  target_layer = layer_map[path.type][path.completed];
-
-  L.polyline(path.coordinates, {
-    dashArray: target_layer.dash,
-    color: target_layer.color
-  }).bindPopup(popup_text).addTo(target_layer.layer);
 }
 
 /* Add layer overlays to layer controller */
@@ -199,9 +248,14 @@ function onLocationFound(e) {
   L.circle(e.latlng, Math.min(radius, 1000)).addTo(map);
 }
 
+/* Just in case */
+if (typeof zoom_location === 'undefined') {
+  let zoom_location = false;
+}
+
 /* Only add the marker if constant `show_location` is set to "true" by upper-level PHP */
 if (show_location) {
-  map.locate({setView: true, maxZoom: 14});
+  map.locate({setView: zoom_location, maxZoom: 14});
 
   map.on('locationfound', onLocationFound);
 }
