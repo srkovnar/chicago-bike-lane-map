@@ -104,10 +104,20 @@ for (let key in bicycle_paths) {
 
   let path = bicycle_paths[key];
 
+  if (path.disabled) {
+    // Skip this path if disabled
+    continue;
+  }
+
   // If divided into segments, create one line for each segment
   if (path.segments) {
     for (let n in path.segments){
       let segment = path.segments[n];
+
+      if (segment.disabled) {
+        // Skip this segment if disabled
+        continue;
+      }
 
       let popup_text = '<span class="popup">';
 
@@ -117,9 +127,14 @@ for (let key in bicycle_paths) {
       if (segment.name) {
         popup_text += `<b>(${segment.name})</b><br>`;
       }
+
       if (segment.description) {
         popup_text += `${segment.description}<br>`;
       }
+      else if (path.description) {
+        popup_text += `${path.description}<br>`;
+      }
+
       if (segment["completion"]) { // For displaying an estimated completion date
         if (segment.completed) {
           popup_text += `<br><b>Completed:</b> ${segment.completion}<br>`;
