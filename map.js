@@ -104,6 +104,11 @@ for (let key in bicycle_paths) {
 
   let path = bicycle_paths[key];
 
+  if (config.debug) {
+    // Helps for finding spelling errors if the map doesn't display
+    console.log(path.name);
+  }
+
   if (path.disabled) {
     // Skip this path if disabled
     continue;
@@ -113,6 +118,11 @@ for (let key in bicycle_paths) {
   if (path.segments) {
     for (let n in path.segments){
       let segment = path.segments[n];
+
+      if (config.debug) {
+        // Helps for finding spelling errors if the map doesn't display
+        console.log(segment.name);
+      }
 
       if (segment.disabled) {
         // Skip this segment if disabled
@@ -156,47 +166,28 @@ for (let key in bicycle_paths) {
 
       target_layer = layer_map[segment.type][segment.completed];
 
+      /* This is the layer which is visible on the map.
+       * Note that the popup is attached to an invisible "bubble" around the line,
+       * not to the line itself.
+       */
       L.polyline(segment.coordinates, {
         dashArray: target_layer.dash,
-        color: target_layer.color
+        color: target_layer.color,
+        weight: 4,
+        opacity: 1,
+        fillOpacity: 1
+      }).addTo(target_layer.layer);
+      
+      /* Add popup to an invisible line with large weight BEHIND the visible line.
+       * This makes it easier to actually click on the lines, since they are so thin.
+       */
+      L.polyline(segment.coordinates, {
+        fillOpacity: 0,
+        opacity: 0,
+        color: "black", // For debugging - set opacity to non-zero value if you need to see the lines.
+        weight: 15
       }).bindPopup(popup_text).addTo(target_layer.layer);
     }
-  }
-  // Otherwise, assume this entry is just a single line. TODO: Remove this chunk, use segments.
-  else if (path.coordinates) {
-    let popup_text = '<span class="popup">';
-
-    if (path.name) {
-      popup_text += `<b>${path.name}</b><br>`;
-    }
-    if (path.description) {
-      popup_text += `${path.description}`;
-    }
-    if (path.completion) { // For displaying an estimated completion date
-      if (path.completed) {
-        popup_text += `<br><br><b>Completed:</b> ${path.completion}`;
-      }
-      else {
-        popup_text += `<br><br><b>Estimated completion date:</b> ${path.completion}`;
-      }
-    }
-    if (path.links && (path.links.length > 0)) {
-      for (let i = 0; i < path.links.length; i++) {
-        // popup_text += `<tr><td>${path.links[i]["name"]}</td><td>${path.links[i]["address"]}</td></tr></table>`;
-        // Never mind. The table looks stupid. Try again later with better bootstrap.
-        popup_text += `<br><br><b>${path.links[i]["name"]}</b>:<br><a href="${path.links[i]["address"]}" target="_blank">${path.links[i]["address"]}</a>`
-      }
-      // popup_text += "</table>"
-    }
-
-    popup_text += '</span>';
-
-    target_layer = layer_map[path.type][path.completed];
-
-    L.polyline(path.coordinates, {
-      dashArray: target_layer.dash,
-      color: target_layer.color
-    }).bindPopup(popup_text).addTo(target_layer.layer);
   }
 }
 
@@ -263,13 +254,13 @@ function onLocationFound(e) {
 }
 
 /* Just in case */
-if (typeof zoom_location === 'undefined') {
-  let zoom_location = false;
-}
+//if (typeof config.zoom_location === 'undefined') {
+//  let config.zoom_location = false;
+//}
 
 /* Only add the marker if constant `show_location` is set to "true" by upper-level PHP */
-if (show_location) {
-  map.locate({setView: zoom_location, maxZoom: 14});
+if (config.show_location) {
+  map.locate({setView: config.zoom_location, maxZoom: 14});
 
   map.on('locationfound', onLocationFound);
 }
@@ -277,7 +268,7 @@ if (show_location) {
 /* Listen for constant in_progress to be set by upper-level PHP. 
  * If constant is set, display a warning popup
  */
-if (in_progress) {
+if (config.in_progress) {
   var in_progress_popup = L.popup().setLatLng(
     [41.88008353464845, -87.63587439931757]
   ).setContent(
