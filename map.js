@@ -183,10 +183,20 @@ for (let key in bicycle_paths) {
        */
       L.polyline(segment.coordinates, {
         fillOpacity: 0,
-        opacity: 0,
-        color: "black", // For debugging - set opacity to non-zero value if you need to see the lines.
+        opacity: (config["debug_showOutlines"]) ? 0.5 : 0,
+        color: target_layer.color,
         weight: 15
       }).bindPopup(popup_text).addTo(target_layer.layer);
+
+      // If turned on, little black dots will be shown on each recorded coordinate. Helps with editing.
+      if (config["debug_showPoints"]) {
+        for (let point in segment.coordinates) {
+          L.circle(segment["coordinates"][point], {
+            color: 'black',
+            radius: 5
+          }).addTo(target_layer.layer);
+        }
+      }
     }
   }
 }
