@@ -2,8 +2,10 @@
   require("vendor/autoload.php");
 
   // Pack JSON into PHP variable
-  $paths = json_decode(file_get_contents("../paths.json"), true);
-  // ^ Can't remember what the "true" does but I know it's important for something...
+  $paths = json_decode(file_get_contents("../paths.json"), true); // The "true" puts it in array mode
+
+  // Pack config data into PHP variable (WARNING: DO NOT INSERT INTO JAVASCRIPT, there is sensitive information in here that must not appear on client's device)
+  $config = json_decode(file_get_contents("../config.json"), true);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,6 +52,27 @@
             <li>
               <a href="contact.php" class="nav-link">Contact</a>
             </li>
+            <!-- Inclusion of the "Data" menu option is dependent on your config.json file. If you set this option to true in your config.json, your path data will be available for download, and the "Raw Data" menu option will appear on your pages. If not, the data will not be publicly accessible. -->
+            <?php
+              # 
+              if($config["make_path_data_public"]) {
+                echo '
+                  <li>
+                    <a href="getdata.php" class="nav-link">Raw Data</a>
+                  </li>
+                ';
+              }
+            ?>
+            <!-- Inclusion of the "Github" menu option is dependent on the presence of a github link in your config.json file. If no github is listed, none will be attributed. -->
+            <?php
+              if ($config["github"]){
+                echo '
+                  <li>
+                    <a href="' . $config["github"] . '" class="nav-link">Github</a>
+                  </li>
+                ';
+              }
+            ?>
           </ul>
         </div>
 

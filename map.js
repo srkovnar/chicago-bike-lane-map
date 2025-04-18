@@ -146,12 +146,7 @@ for (let key in bicycle_paths) {
       }
 
       if (segment["completion"]) { // For displaying an estimated completion date
-        if (segment.completed) {
-          popup_text += `<br><b>Completed:</b> ${segment.completion}<br>`;
-        }
-        else {
-          popup_text += `<br><b>Estimated completion date:</b> ${segment.completion}<br>`;
-        }
+        popup_text += `<br><b>Completion:</b> ${segment.completion}<br>`;
       }
       if (segment.links && (segment.links.length > 0)) {
         for (let i = 0; i < segment.links.length; i++) {

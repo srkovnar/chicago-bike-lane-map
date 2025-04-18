@@ -8,7 +8,7 @@ Project folder
 |   |___index.php
 |   |___...
 |
-|___paths.json <-- This is where I store info for the bike lanes**
+|___paths.json <-- This is where I store info for the bike lanes
 |___config.json <-- This stores info for the website - map parameters, mailing info, etc.
 ```
 
@@ -27,8 +27,14 @@ Project folder
     "security": "ssl",
     "destination": "contact@yourdomain.net"
   },
-  "in_progress": true,
-  "show_location": true
+  "github": "https://github.com/srkovnar/chicago-bike-lane-map",
+  "in_progress": false,
+  "show_location": false,
+  "zoom_location": false,
+  "make_path_data_public": true,
+
+  "debug_showOutlines": false,
+  "debug_showPoints": false
 }
 ```
 
@@ -45,6 +51,21 @@ You will have to configure your own mail parameters based on the mailing service
 
 **PLEASE NOTE:** You may be confused that the address *sending* the email is the one that you have access to. Shouldn't it be the other way around? The answer is no. You cannot send emails from someone else's email address, but what you *can* do is alter the "ReplyTo" property on the email. The automatically-generated email that shows up in your inbox will be both sent and received by you, but when you click "Reply", it will put in the email of the user who submitted the contact form.
 
+### Website Configuration Options
+
+- `github`: A link to your Github page. If present, a link will be added at the top of the page for your Github.
+- `make_path_data_public`: Make `paths.json` publicly-accessible on this domain at `/getdata.php`. This will also create a header link for this page with the label "Raw Data".
+- `in_progress`: If true, a popup will be shown when the map loads indicating that the map is still unfinished.
+- `show_location`: If true, the map will attempt to ask for the user's location. If the user allows location services for this website, a pin will be placed on the map showing their position. This can be helpful, but also a bit annoying.
+- `zoom_location`: If true, and if `show_location` is also true, the map will zoom to the user's location once it loads.
+
+### Debug Configuration Options
+
+Plotting out all of the paths is tediuous, and it's easy to make mistakes. I've done my best to set up the `paths.json` in a way where you can easily break paths down into segments for ease of modification, but there are also a couple debug options you can enable in the `config.json` to visualize what's going on.
+
+- `debug_showOutlines` will show you the "hitbox" of your lines. Since Leaflet line objects have single-pixel width, I had to create invisible bubbles around the paths to make clicking on them possible. Turning this option to `true` will make visible these bubbles. You'll have to modify `map.js` to tweak the size of them.
+- `debug_showPoints` will place a dot on each individual coordinate present in `paths.json`. This makes it a little easier to identify which coordinates have already been plotted.
+
 ## paths.json
 
 paths.json will look something like this:
@@ -53,9 +74,14 @@ paths.json will look something like this:
 {
   {
     "name": "Wellington Neighborhood Bikeway",
-    "coordinates": [
-      [41.93570733775486, -87.7123946150148],
-      [41.935745740853555, -87.70759355004395]
+    "segments": [
+      {
+        "name": "Segment name here (optional)",
+        "coordinates": [
+          [41.93570733775486, -87.7123946150148],
+          [41.935745740853555, -87.70759355004395]
+        ],
+      }
     ],
     "type": "Neighborhood Bikeway",
     "completed": true,
@@ -66,40 +92,29 @@ paths.json will look something like this:
         "name": "My test website",
         "address": "https://yourwebsitehere.com"
       }
-    ],
-    "start": "Kimball",
-    "end": "Kedzie"
+    ]
   },
   {
     "name": "California Bike Lane, Schubert to George St",
-    "coordinates": [
-      [41.934472760272094, -87.69769902281476],
-      [41.93029561038914, -87.69757835449403]
+    "segments": [
+      {
+        "name": "Segment name here (optional)",
+        "coordinates": [
+          [41.934472760272094, -87.69769902281476],
+          [41.93029561038914, -87.69757835449403]
+        ],
+      }
     ],
     "type": "RIPBL",
     "completed": true
-  }
+  },
+  ...
+  (continue for the rest of your paths)
+  ...
 }
 ```
 
 
 Obviously you're going to have more than two bike lanes. Each bike lane will need to be its own object.
 
-Note that only the `name`, `coordinates`, `type`, and `completed` fields are necessary. All other fields will be detected dynamically if they are available, and that information will be formatted and added to the popup that appears when you click on that bike path.
-
-# Other bits of info
-
-Example of how to create a line manually, including setting a custom color (default is blue) and a dashed line pattern (set to zero or omit to create a solid line)
-
-```javascript
-// Example manually-created line - delete later!
-var my_line = L.polyline([
-  [41.871837956205496, -87.64132180389926],
-  [41.88142417791501, -87.63119378302333]
-],{
-  color: "red",
-  dashArray: "20, 20"
-}).bindPopup(
-  "a red one!"
-).addTo(path_layer_2);
-```
+Note that only the `name`, `segments`, `coordinates`, `type`, and `completed` fields are necessary. All other fields will be detected dynamically if they are available, and that information will be formatted and added to the popup that appears when you click on that bike path.
