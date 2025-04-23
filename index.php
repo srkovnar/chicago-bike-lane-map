@@ -4,6 +4,8 @@
   // Pack bike path data into PHP variable
   $paths = json_decode(file_get_contents("../paths.json"), true); // The "true" puts it in array mode
 
+  $pathstyle = json_decode(file_get_contents("../style.json"), true);
+
   // Pack config data into PHP variable (WARNING: DO NOT INSERT INTO JAVASCRIPT, there is sensitive information in here that must not appear on client's device)
   $config = json_decode(file_get_contents("../config.json"), true);
 ?>
@@ -94,6 +96,11 @@
     <!-- Pack data structure back into JSON for map script -->
     <script>
       const bicycle_paths = <?php echo json_encode($paths); ?>;
+    </script>
+
+    <!-- Insert path style parameters into JSON editable object -->
+    <script>
+      let layer_map = <?php echo json_encode($pathstyle); ?>;
     </script>
 
     <!-- Insert map parameters from config into JSON constants -->

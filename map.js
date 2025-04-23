@@ -31,78 +31,22 @@ let layer_control = L.control.layers(base_maps);
 /* Dummy layers (only used for formatting the key) */
 let path_layer_break = L.layerGroup([]);
 
-/* Actual bike lane layers */
-let layer_trails = L.layerGroup([]);
-let layer_trails_incomplete = L.layerGroup([]);
-let layer_pbl = L.layerGroup([]);
-let layer_pbl_incomplete = L.layerGroup([]);
-let layer_ripbl = L.layerGroup([]);
-let layer_ripbl_incomplete = L.layerGroup([]);
-let layer_bike_boulevard = L.layerGroup([]);
-let layer_bike_boulevard_incomplete = L.layerGroup([]);
-// TODO: Consider whether these should be separated into complete / in progress...?
-// Maybe I should have the layers be "Complete / In Progress" and the colors are just separate
+/* Structure for initializing layers and formatting (imported by upper-level PHP / JSON) */
+if (!layer_map)
+{
+  console.log("ERROR: path_styles object is missing. This needs to be provided by upper-level PHP. See README for details.")
+}
 
-let layer_map = {
-  "Trail": {
-    true: {
-      "layer": layer_trails,
-      "dash": "0",
-      //"color": "#f80",
-      "color": "red",
-    },
-    false: {
-      "layer": layer_trails_incomplete,
-      "dash": "7",
-      // "color": "#f80",
-      "color": "red",
-    }
-  },
-  "PBL": {
-    true: {
-      "layer": layer_pbl,
-      "dash": "0",
-      "color": "purple"
-    },
-    false: {
-      "layer": layer_pbl_incomplete,
-      "dash": "7",
-      "color": "purple"
-    }
-  },
-  "RIPBL": {
-    true: {
-      "layer": layer_ripbl,
-      "dash": "0",
-      // "color": "#29F"
-      "color": "#24E"
-    },
-    false: {
-      "layer": layer_ripbl_incomplete,
-      "dash": "7",
-      // "color": "#29F"
-      "color": "#24E"
-    }
-  },
-  "Neighborhood Bikeway": {
-    true: {
-      "layer": layer_bike_boulevard,
-      "dash": "0",
-      "color": "green"
-    },
-    false: {
-      "layer": layer_bike_boulevard_incomplete,
-      "dash": "7",
-      "color": "green"
-    }
-  },
-};
+let layer_object_map = {}; // unused
+for (let key in layer_map) {
+  layer_map[key]["layerObject"] = L.layerGroup([]);
+}
 
 let num_paths = 0;
-for (let key in bicycle_paths) {
+for (let k in bicycle_paths) {
   num_paths++;
 
-  let path = bicycle_paths[key];
+  let path = bicycle_paths[k];
 
   if (config.debug) {
     // Helps for finding spelling errors if the map doesn't display
@@ -119,13 +63,13 @@ for (let key in bicycle_paths) {
     for (let n in path.segments){
       let segment = path.segments[n];
 
-      if (config.debug) {
+      if (config["debug_logNames"]) {
         // Helps for finding spelling errors if the map doesn't display
         console.log(segment.name);
       }
 
+      // Skip this segment if disabled
       if (segment.disabled) {
-        // Skip this segment if disabled
         continue;
       }
 
@@ -159,19 +103,24 @@ for (let key in bicycle_paths) {
       
       popup_text += '</span>';
 
-      target_layer = layer_map[segment.type][segment.completed];
+      if (segment["type"]) {
+        target_layer = layer_map[segment["type"]];
+      }
+      else {
+        target_layer = layer_map[paath["type"]];
+      }
 
       /* This is the layer which is visible on the map.
        * Note that the popup is attached to an invisible "bubble" around the line,
        * not to the line itself.
        */
       L.polyline(segment.coordinates, {
-        dashArray: target_layer.dash,
-        color: target_layer.color,
+        dashArray: target_layer["dash"],
+        color: target_layer["color"],
         weight: 4,
         opacity: 1,
         fillOpacity: 1
-      }).addTo(target_layer.layer);
+      }).addTo(target_layer["layerObject"]);
       
       /* Add popup to an invisible line with large weight BEHIND the visible line.
        * This makes it easier to actually click on the lines, since they are so thin.
@@ -179,9 +128,9 @@ for (let key in bicycle_paths) {
       L.polyline(segment.coordinates, {
         fillOpacity: 0,
         opacity: (config["debug_showOutlines"]) ? 0.5 : 0,
-        color: target_layer.color,
+        color: target_layer["color"],
         weight: 15
-      }).bindPopup(popup_text).addTo(target_layer.layer);
+      }).bindPopup(popup_text).addTo(target_layer["layerObject"]);
 
       // If turned on, little black dots will be shown on each recorded coordinate. Helps with editing.
       if (config["debug_showPoints"]) {
@@ -196,55 +145,15 @@ for (let key in bicycle_paths) {
   }
 }
 
-/* Add layer overlays to layer controller */
-layer_control.addOverlay(
-  layer_map["Trail"][true]["layer"],
-  "Trails"
-);
-layer_control.addOverlay(
-  layer_pbl,
-  "Protected Bike Lane"
-);
-layer_control.addOverlay(
-  layer_ripbl,
-  "Rapid-Implementation Protected Bike Lane (RIPBL)"
-);
-layer_control.addOverlay(
-  layer_bike_boulevard,
-  "Neighborhood Bikeway"
-);
+/* Add all layers to layer control box and to the map */
+for (let key in layer_map) {
+  layer_control.addOverlay(
+    layer_map[key]["layerObject"],
+    layer_map[key]["displayName"]
+  );
 
-layer_control.addOverlay(
-  path_layer_break,
-  "----------------------"
-)
-
-layer_control.addOverlay(
-  layer_trails_incomplete,
-  "Trails (incomplete)"
-);
-layer_control.addOverlay(
-  layer_pbl_incomplete,
-  "Protected Bike Lane (Incomplete)"
-);
-layer_control.addOverlay(
-  layer_ripbl_incomplete,
-  "Rapid-Implementation Protected Bike Lane (RIPBL) (Incomplete)"
-);
-layer_control.addOverlay(
-  layer_bike_boulevard_incomplete,
-  "Neighborhood Bikeway (Incomplete)"
-);
-
-layer_trails.addTo(map);
-layer_pbl.addTo(map);
-layer_ripbl.addTo(map);
-layer_bike_boulevard.addTo(map);
-
-layer_trails_incomplete.addTo(map);
-layer_pbl_incomplete.addTo(map);
-layer_ripbl_incomplete.addTo(map);
-layer_bike_boulevard_incomplete.addTo(map);
+  layer_map[key]["layerObject"].addTo(map);
+}
 
 layer_control.addTo(map);
 

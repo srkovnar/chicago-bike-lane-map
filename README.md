@@ -51,6 +51,73 @@ You will have to configure your own mail parameters based on the mailing service
 
 **PLEASE NOTE:** You may be confused that the address *sending* the email is the one that you have access to. Shouldn't it be the other way around? The answer is no. You cannot send emails from someone else's email address, but what you *can* do is alter the "ReplyTo" property on the email. The automatically-generated email that shows up in your inbox will be both sent and received by you, but when you click "Reply", it will put in the email of the user who submitted the contact form.
 
+## style.json
+
+As of 2025-04-21, this is also required. I offloaded the map assigning color and formatting for each path type into a separate file
+
+```json
+{
+  "trail": {
+    "layerObject": null,
+    "displayName": "Trails",
+    "dash": "0",
+    "color": "red"
+  },
+  "pbl": {
+    "layerObject": null,
+    "displayName": "Protected Bike Lanes",
+    "dash": "0",
+    "color": "purple"
+  },
+  "ripbl": {
+    "layerObject": null,
+    "displayName": "Rapid-Implementation Protected Bike Lanes",
+    "dash": "0",
+    "color": "#24E"
+  },
+  "bikeway": {
+    "layerObject": null,
+    "displayName": "Neighborhood Bikeways ('Greenways')",
+    "dash": "0",
+    "color": "green"
+  },
+  "other": {
+    "layerObject": null,
+    "displayName": "Other connections",
+    "dash": "0",
+    "color": "gray"
+  },
+  "break": {
+    "layerObject": null,
+    "displayName": "------------------"
+  },
+  "trail_incomplete": {
+    "layerObject": null,
+    "displayName": "Future Trails",
+    "dash": "7",
+    "color": "red"
+  },
+  "pbl_incomplete": {
+    "layerObject": null,
+    "displayName": "Future Protected Bike Lanes",
+    "dash": "7",
+    "color": "purple"
+  },
+  "ripbl_incomplete": {
+    "layerObject": null,
+    "displayName": "Future Rapid-Implementation Protected Bike Lanes",
+    "dash": "7",
+    "color": "#24E"
+  },
+  "bikeway_incomplete": {
+    "layerObject": null,
+    "displayName": "Future Neighborhood Bikeways ('Greenways')",
+    "dash": "7",
+    "color": "green"
+  }
+}
+```
+
 ### Website Configuration Options
 
 - `github`: A link to your Github page. If present, a link will be added at the top of the page for your Github.
@@ -83,8 +150,7 @@ paths.json will look something like this:
         ],
       }
     ],
-    "type": "Neighborhood Bikeway",
-    "completed": true,
+    "type": "bikeway_incomplete"
     "completion": "Between Summer 2022 and Fall 2024",
     "description": "Here is my description of this bike lane. This will appear in the popup.",
     "links": [
@@ -99,14 +165,13 @@ paths.json will look something like this:
     "segments": [
       {
         "name": "Segment name here (optional)",
+        "type": "ripbl",
         "coordinates": [
           [41.934472760272094, -87.69769902281476],
           [41.93029561038914, -87.69757835449403]
         ],
       }
-    ],
-    "type": "RIPBL",
-    "completed": true
+    ]
   },
   ...
   (continue for the rest of your paths)
