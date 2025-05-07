@@ -92,6 +92,7 @@ for (let k in bicycle_paths) {
       if (segment["completion"]) { // For displaying an estimated completion date
         popup_text += `<br><b>Completion:</b> ${segment.completion}<br>`;
       }
+
       if (segment.links && (segment.links.length > 0)) {
         for (let i = 0; i < segment.links.length; i++) {
           // popup_text += `<tr><td>${path.links[i]["name"]}</td><td>${path.links[i]["address"]}</td></tr></table>`;
@@ -107,7 +108,7 @@ for (let k in bicycle_paths) {
         target_layer = layer_map[segment["type"]];
       }
       else {
-        target_layer = layer_map[paath["type"]];
+        target_layer = layer_map[path["type"]];
       }
 
       /* This is the layer which is visible on the map.
