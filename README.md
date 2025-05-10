@@ -200,6 +200,7 @@ You can easily run this application using Docker without installing PHP or other
    git clone https://github.com/srkovnar/chicago-bike-lane-map.git
    cd chicago-bike-lane-map
    ```
-2. If desired, adjust any of the config files in the `config` directory
+2. Create a `config` directory in the root containing the json files that the application expects (`config.json`, `paths.json`, `style.json`, and `wards.geojson`).
+  See [this previous commit](https://github.com/matt-hendrick/chicago-bike-lane-map/commit/e2cbfe335777f2e447f58499821044b88f598708) for one example of what those files could look like.
 3. Run `docker-compose up`
 4. Visit http://localhost:8080 in your browser
