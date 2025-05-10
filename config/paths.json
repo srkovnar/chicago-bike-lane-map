@@ -1,0 +1,36 @@
+[
+    {
+      "name": "Wellington Neighborhood Bikeway",
+      "segments": [
+        {
+          "name": "Segment name here (optional)",
+          "coordinates": [
+            [41.93570733775486, -87.7123946150148],
+            [41.935745740853555, -87.70759355004395]
+          ]
+        }
+      ],
+      "type": "bikeway_incomplete",
+      "completion": "Between Summer 2022 and Fall 2024",
+      "description": "Here is my description of this bike lane. This will appear in the popup.",
+      "links": [
+        {
+          "name": "My test website",
+          "address": "https://yourwebsitehere.com"
+        }
+      ]
+    },
+    {
+      "name": "California Bike Lane, Schubert to George St",
+      "segments": [
+        {
+          "name": "Segment name here (optional)",
+          "type": "ripbl",
+          "coordinates": [
+            [41.934472760272094, -87.69769902281476],
+            [41.93029561038914, -87.69757835449403]
+          ]
+        }
+      ]
+    }
+  ]

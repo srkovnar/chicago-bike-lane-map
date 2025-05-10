@@ -8,6 +8,10 @@
 
   // Pack config data into PHP variable (WARNING: DO NOT INSERT INTO JAVASCRIPT, there is sensitive information in here that must not appear on client's device)
   $config = json_decode(file_get_contents("../config.json"), true);
+
+  // Simplified geojson file pulled from https://github.com/datamade/chi-councilmatic/blob/main/data/final/chicago_shapes.geojson
+  // Then enriched with aldermanic data from here https://data.cityofchicago.org/resource/c6ie-9e6c.json
+  $wards = json_decode(file_get_contents("../wards.geojson"), true);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,6 +110,10 @@
     <!-- Insert map parameters from config into JSON constants -->
     <script>
       const config = <?php echo json_encode($config); ?>;
+    </script>
+
+    <script>
+      const chicago_wards = <?php echo json_encode($wards); ?>;
     </script>
 
     <div id="map" style="width: 100vw; height: 91vh; padding-top: 55px;"> <!-- CHange to 600px/400px if desired -->

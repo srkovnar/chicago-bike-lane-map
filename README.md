@@ -183,3 +183,23 @@ paths.json will look something like this:
 Obviously you're going to have more than two bike lanes. Each bike lane will need to be its own object.
 
 Note that only the `name`, `segments`, `coordinates`, `type`, and `completed` fields are necessary. All other fields will be detected dynamically if they are available, and that information will be formatted and added to the popup that appears when you click on that bike path.
+
+## Docker Setup
+
+You can easily run this application using Docker without installing PHP or other dependencies locally.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/) (usually included with Docker Desktop)
+
+### Quick Start
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/srkovnar/chicago-bike-lane-map.git
+   cd chicago-bike-lane-map
+   ```
+2. If desired, adjust any of the config files in the `config` directory
+3. Run `docker-compose up`
+4. Visit http://localhost:8080 in your browser
