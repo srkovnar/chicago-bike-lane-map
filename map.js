@@ -146,6 +146,89 @@ for (let k in bicycle_paths) {
   }
 }
 
+/* Create Chicago Wards Layer */
+// Style for the ward boundaries
+const wardStyle = {
+  color: "#6495ED",
+  weight: 1.5,
+  opacity: 0.65,
+  fillOpacity: 0.05,
+  fillColor: "#6495ED"
+};
+
+
+function styleWard(feature) {
+  return wardStyle;
+}
+
+// Create popup content for each ward
+function createWardPopup(feature, layer) {
+  if (feature.properties) {
+    const wardNumber = feature.properties.ward || "Unknown";
+    
+    let popupContent = `<div class="ward-popup">
+      <h4>Ward ${wardNumber}</h4>`;
+          
+    // Use first and last name if available
+    if (feature.properties.firstName && feature.properties.lastName) {
+      popupContent += `
+      <p><strong>Alderman:</strong> ${feature.properties.firstName} ${feature.properties.lastName}</p>`;
+    } else if (feature.properties.alderman) {
+      // Fallback to full alderman name if we don't have a first/last name
+      popupContent += `
+      <p><strong>Alderman:</strong> ${feature.properties.alderman}</p>`;
+    }
+      
+    if (feature.properties.email) {
+      popupContent += `
+      <p><strong>Email:</strong> <a href="mailto:${feature.properties.email}">${feature.properties.email}</a></p>`;
+    }
+    
+    if (feature.properties.wardPhone) {
+      popupContent += `
+      <p><strong>Ward Phone:</strong> ${feature.properties.wardPhone}</p>`;
+    }
+    
+    if (feature.properties.address) {
+      popupContent += `
+      <p><strong>Ward Office:</strong> ${feature.properties.address}</p>`;
+    }
+    
+    popupContent += `</div>`;
+    layer.bindPopup(popupContent);
+  }
+}
+
+// Initialize the wards layer
+const wardsLayer = L.layerGroup();
+
+// Add the ward GeoJSON to the map (now it has alderman data embedded)
+L.geoJSON(chicago_wards, {
+  style: styleWard,
+  onEachFeature: createWardPopup
+}).addTo(wardsLayer);
+
+// Add ward layer to the layer control
+layer_control.addOverlay(wardsLayer, "Chicago Wards");
+
+// Add the wards layer to the map - do this BEFORE adding bike lanes
+wardsLayer.addTo(map);
+
+// Add custom CSS for ward popups
+const wardPopupStyle = document.createElement('style');
+wardPopupStyle.textContent = `
+  .ward-popup h4 {
+    margin: 0 0 10px 0;
+    color: #0066cc;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+  }
+  .ward-popup p {
+    margin: 5px 0;
+  }
+`;
+document.head.appendChild(wardPopupStyle);
+
 /* Add all layers to layer control box and to the map */
 for (let key in layer_map) {
   layer_control.addOverlay(
@@ -157,6 +240,7 @@ for (let key in layer_map) {
 }
 
 layer_control.addTo(map);
+
 
 /* Function to add a marker at your location */
 function onLocationFound(e) {

@@ -1,0 +1,22 @@
+version: '3'
+services:
+  web:
+    image: php:8.2-apache
+    ports:
+      - "8080:80"
+    volumes:
+      # Mount the repository as the document root
+      - ./:/var/www/html
+      # Create a virtual parent directory for config files to match the expected file structure
+      - ./config/config.json:/var/www/config.json
+      - ./config/paths.json:/var/www/paths.json
+      - ./config/style.json:/var/www/style.json
+      - ./config/wards.geojson:/var/www/wards.geojson
+      # We then need to run a command to install all the dependencies (there is probably a cleaner way to do this)
+    command: >
+      bash -c "
+        apt-get update && apt-get install -y git unzip &&
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+        cd /var/www/html && composer install &&
+        apache2-foreground
+      "
