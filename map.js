@@ -192,7 +192,7 @@ function styleWard(feature) {
 // Create popup content for each ward
 function createWardPopup(feature, layer) {
   if (feature.properties) {
-    const wardNumber = feature.properties.ward || "Unknown";
+    const wardNumber = feature["properties"]["ward_id"] || "Unknown";
     
     let popupContent = `<div class="ward-popup">
       <h4>Ward ${wardNumber}</h4>`;
