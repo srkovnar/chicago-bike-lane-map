@@ -1,4 +1,10 @@
-# Directory setup
+# Requirements for development
+
+- NodeJS
+- PHP or Docker (explained in detail later)
+- Python (if you wish to use the included utility scripts)
+
+# Directory setuptopojson
 
 ```
 Project folder
@@ -204,3 +210,29 @@ You can easily run this application using Docker without installing PHP or other
   See [this previous commit](https://github.com/matt-hendrick/chicago-bike-lane-map/commit/e2cbfe335777f2e447f58499821044b88f598708) for one example of what those files could look like.
 3. Run `docker-compose up`
 4. Visit http://localhost:8080 in your browser
+
+
+# Utility scripts
+
+This repository includes a utility script folder, which includes a nodejs script used to assign colors to the ward boundaries polygons (if the file `wards.geojson` is present). This script should be run beforehand, on your local machine, to augment your `wards.geojson` file with hexcode color assignments that can be interpreted by the mapping script `map.js`.
+
+The `map.js` will inspect the geojson file for the `color` property. If it is present, the associated polygon on the map will be assigned that color. If it is not present, the default color will be used.
+
+Assigning colors makes it easier to differentiate ward boundaries.
+
+In order to run the script, you must do the following:
+
+1. Install NodeJS v20 or later on your development computer. *v18 will not work!*
+2. Run `npm install` on your computer to get all of the required packages.
+3. Run the script. Example usage shown below.
+
+```bash
+node ./utilities/generateColors.js ../wards.geojson -c 8dd3c7 ffffb3 bebada fb8072 -o ./output.geojson
+```
+
+Three arguments are required:
+1. The input GeoJSON ward boundary file,
+2. Hexcodes of four colors for the wards, and
+3. An output file destination (this can be the same as the input file destination if you want to overwrite your original file. No warning will be issued.).
+
+This updated GeoJSON file can then be provided to the website, and the colors will be used to fill the polygons of the ward boundaries on the map. This process can also be done manually, of course, but the script makes it easier.

@@ -1,0 +1,23 @@
+{
+  "name": "chicago-bike-lane-map",
+  "version": "1.0.0",
+  "description": "Todo",
+  "main": "generateColors.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srkovnar/chicago-bike-lane-map.git"
+  },
+  "author": "srkovnar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/srkovnar/chicago-bike-lane-map/issues"
+  },
+  "homepage": "https://github.com/srkovnar/chicago-bike-lane-map#readme",
+  "dependencies": {
+    "argparse": "^2.0.1",
+    "topojson": "^3.0.2"
+  }
+}

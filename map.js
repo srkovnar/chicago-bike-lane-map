@@ -19,6 +19,32 @@ const map = L.map("map", {
   layers: [osm_hot]
 }).setView([41.8662405,-87.660721], 11);
 
+/* Initialize map panes to separate background ward boundaries, paths, and labels */
+map.createPane('labels');
+map.createPane('boundaries');
+
+/* Default CSS pane order: (higher number = higher priority)
+ *
+ * ```css
+ * .leaflet-pane         { z-index: 400; }
+ * .leaflet-tile-pane    { z-index: 200; }
+ * .leaflet-overlay-pane { z-index: 400; }
+ * .leaflet-shadow-pane  { z-index: 500; }
+ * .leaflet-marker-pane  { z-index: 600; }
+ * .leaflet-tooltip-pane   { z-index: 650; }
+ * .leaflet-popup-pane   { z-index: 700; }
+ * 
+ * .leaflet-map-pane canvas { z-index: 100; }
+ * .leaflet-map-pane svg    { z-index: 200; }
+ * ```
+ */
+map.getPane('labels').style.zIndex = 650;
+map.getPane('boundaries').style.zIndex = 350; // Always show below paths
+
+// Do not capture clicks on label pane; let them fall through to paths and boudnaries
+map.getPane('labels').style.pointerEvents = 'none';
+
+
 /* Initialize Layer Groups */
 let base_maps = {
   "OpenStreetMaps": osm,
@@ -28,20 +54,18 @@ let base_maps = {
 /* Initialize Layer Manager */
 let layer_control = L.control.layers(base_maps);
 
-/* Dummy layers (only used for formatting the key) */
-let path_layer_break = L.layerGroup([]);
-
 /* Structure for initializing layers and formatting (imported by upper-level PHP / JSON) */
 if (!layer_map)
 {
   console.log("ERROR: path_styles object is missing. This needs to be provided by upper-level PHP. See README for details.")
 }
 
-let layer_object_map = {}; // unused
 for (let key in layer_map) {
   layer_map[key]["layerObject"] = L.layerGroup([]);
 }
 
+
+/* Parse path data file. */
 let num_paths = 0;
 for (let k in bicycle_paths) {
   num_paths++;
@@ -147,18 +171,22 @@ for (let k in bicycle_paths) {
 }
 
 /* Create Chicago Wards Layer */
-// Style for the ward boundaries
-const wardStyle = {
-  color: "#6495ED",
-  weight: 1.5,
-  opacity: 0.65,
-  fillOpacity: 0.05,
-  fillColor: "#6495ED"
-};
-
-
 function styleWard(feature) {
-  return wardStyle;
+  var fill_opacity = 0.1
+  var fill_color = "#6495ED";
+
+  if (feature["properties"]["fillColor"]) {
+    fill_opacity = 0.3;
+    fill_color = feature["properties"]["fillColor"];
+  }
+  
+  return {
+    color: fill_color,
+    weight: 1.5,
+    opacity: 0.65,
+    fillOpacity: fill_opacity,
+    fillColor: fill_color
+  };
 }
 
 // Create popup content for each ward
@@ -205,7 +233,8 @@ const wardsLayer = L.layerGroup();
 // Add the ward GeoJSON to the map (now it has alderman data embedded)
 L.geoJSON(chicago_wards, {
   style: styleWard,
-  onEachFeature: createWardPopup
+  onEachFeature: createWardPopup,
+  pane: "boundaries"
 }).addTo(wardsLayer);
 
 // Add ward layer to the layer control
