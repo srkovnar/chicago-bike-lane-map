@@ -72,11 +72,6 @@ for (let k in bicycle_paths) {
 
   let path = bicycle_paths[k];
 
-  if (config.debug) {
-    // Helps for finding spelling errors if the map doesn't display
-    console.log(path.name);
-  }
-
   if (path.disabled) {
     // Skip this path if disabled
     continue;
@@ -287,8 +282,8 @@ function onLocationFound(e) {
 //}
 
 /* Only add the marker if constant `show_location` is set to "true" by upper-level PHP */
-if (config.show_location) {
-  map.locate({setView: config.zoom_location, maxZoom: 14});
+if (config["show_location"]) {
+  map.locate({setView: config["zoom_location"], maxZoom: 14});
 
   map.on('locationfound', onLocationFound);
 }
@@ -296,7 +291,7 @@ if (config.show_location) {
 /* Listen for constant in_progress to be set by upper-level PHP. 
  * If constant is set, display a warning popup
  */
-if (config.in_progress) {
+if (config["in_progress"]) {
   var in_progress_popup = L.popup().setLatLng(
     [41.88008353464845, -87.63587439931757]
   ).setContent(

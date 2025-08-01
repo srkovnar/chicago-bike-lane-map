@@ -12,6 +12,7 @@
   // Simplified geojson file pulled from https://github.com/datamade/chi-councilmatic/blob/main/data/final/chicago_shapes.geojson
   // Then enriched with aldermanic data from here https://data.cityofchicago.org/resource/c6ie-9e6c.json
   $wards = json_decode(file_get_contents("../wards.geojson"), true);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -107,9 +108,16 @@
       let layer_map = <?php echo json_encode($pathstyle); ?>;
     </script>
 
-    <!-- Insert map parameters from config into JSON constants -->
+    <!-- Insert map parameters from config into JSON constants. We don't want to pass the whole config since it contains sensitive information, so we pick and choose which values we pass. -->
     <script>
-      const config = <?php echo json_encode($config); ?>;
+      const config = {
+        "debug_logNames": <?php echo json_encode($config["debug_logNames"]); ?>,
+        "debug_showOutlines": <?php echo json_encode($config["debug_showOutlines"]); ?>,
+        "debug_showPoints": <?php echo json_encode($config["debug_showPoints"]); ?>,
+        "show_location": <?php echo json_encode($config["show_location"]) ?>,
+        "zoom_location": <?php echo json_encode($config["zoom_location"]) ?>,
+        "in_progress": <?php echo json_encode($config["in_progress"]) ?>
+      };
     </script>
 
     <script>

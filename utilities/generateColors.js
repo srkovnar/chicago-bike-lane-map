@@ -23,7 +23,10 @@ function generateNeighborColors(geojson_data, colors) {
           break;
         }
       }
-      if (!found) break;
+      if (!found) {
+        console.log(`Error: Color matching failed for region ${geojson_data["features"][n]["properties"]["ward"]}`);
+        break;
+      }
     }
     featureColors[n] = colors[m];
   }
@@ -43,7 +46,7 @@ parser.add_argument("file", {
 parser.add_argument("-c", "--colors", {
   help: "Colors to be used in the map",
   required: "true",
-  nargs: 4
+  nargs: '+'
 });
 parser.add_argument("-o", "--output", {
   help: "Output file for data with fillColor properties added",
@@ -53,6 +56,10 @@ parser.add_argument("-o", "--output", {
 var args = parser.parse_args();
 
 console.log("Input file:", args["file"]);
+
+//if (args["colors"].length < 4) {
+//  console.log("ERROR: Not enough colors, need at least four")
+//}
 
 // Pre-process colors (you can't input hashtags on the command line)
 var colors_with_hashtag = args["colors"];
